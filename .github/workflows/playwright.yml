@@ -1,7 +1,7 @@
 name: Playwright Tests
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Enables manual triggering of the workflow
   push:
     branches: [ main ]
   pull_request:
@@ -30,9 +30,13 @@ jobs:
     - name: Run tests
       run: pytest
       
+    - name: Debugging: List files for upload
+      if: always()
+      run: ls -R
+
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.2 # Explicitly specify the latest version
       with:
         name: test-results
         path: |
