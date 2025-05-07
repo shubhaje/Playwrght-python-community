@@ -30,7 +30,7 @@ jobs:
     - name: Run tests
       run: pytest
 
-    - name: Debugging: List files for upload
+    - name: Debugging List files for upload
       if: always()
       run: ls -R
 
