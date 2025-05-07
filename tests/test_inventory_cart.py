@@ -2,7 +2,9 @@ import pytest
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 from pages.cart_page import CartPage
-
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 @pytest.fixture
 def setup_login(page):
     login_page = LoginPage(page)

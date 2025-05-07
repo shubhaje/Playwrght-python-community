@@ -33,13 +33,13 @@ jobs:
 
     - name: Run Playwright tests
       run: |
-        pytest --html=report/report.html --self-contained-html tests/ -v
+        PYTHONPATH=$PYTHONPATH:$(pwd) pytest --html=report/report.html --self-contained-html tests/ -v
 
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
-        name: test-results
+        name: playwright-test-results
         path: |
           report/
           test-results/

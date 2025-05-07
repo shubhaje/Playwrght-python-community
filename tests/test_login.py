@@ -1,6 +1,8 @@
 import pytest
 from pages.login_page import LoginPage
-
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 @pytest.mark.smoke
 def test_valid_login(page):
     login_page = LoginPage(page)
