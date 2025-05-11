@@ -1,9 +1,6 @@
 from playwright.sync_api import Page
 from config.test_data import USER_CREDENTIALS, DEFAULT_ENV
-<<<<<<< HEAD
-=======
 import os
->>>>>>> 673faee01bed3c0a13a7a4de9732ce684bf40020
 
 class LoginPage:
     def __init__(self, page: Page):
@@ -23,12 +20,6 @@ class LoginPage:
 
     def get_error_message(self) -> str:
         return self.error_message.text_content()
-<<<<<<< HEAD
-        
-    def get_user_credentials(self, user_type: str, env: str = DEFAULT_ENV) -> dict:
-        """Get user credentials from test data for specified user type and environment"""
-        return USER_CREDENTIALS[env][user_type]
-=======
 
     @staticmethod
     def get_user_credentials(user_type: str, environment: str = None) -> dict:
@@ -47,4 +38,3 @@ class LoginPage:
         env_credentials = USER_CREDENTIALS.get(env, USER_CREDENTIALS[DEFAULT_ENV])
         
         return env_credentials.get(user_type, {})
->>>>>>> 673faee01bed3c0a13a7a4de9732ce684bf40020
