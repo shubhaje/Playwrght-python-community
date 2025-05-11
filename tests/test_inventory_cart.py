@@ -5,11 +5,13 @@ from pages.cart_page import CartPage
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 @pytest.fixture
 def setup_login(page):
     login_page = LoginPage(page)
+    credentials = login_page.get_user_credentials("standard_user")
     login_page.navigate()
-    login_page.login("standard_user", "secret_sauce")
+    login_page.login(credentials["username"], credentials["password"])
     return page
 
 @pytest.mark.smoke
