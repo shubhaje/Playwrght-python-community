@@ -3,11 +3,15 @@ from pages.login_page import LoginPage
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config.test_data import USER_CREDENTIALS, DEFAULT_ENV
+
 @pytest.mark.smoke
 def test_valid_login(page):
     login_page = LoginPage(page)
+    # Test with default environment
+    credentials = USER_CREDENTIALS[DEFAULT_ENV]["standard_user"]
     login_page.navigate()
-    login_page.login("standard_user", "secret_sauce")
+    login_page.login(credentials["username"], credentials["password"])
     
     # Assert successful login by checking the URL
     assert page.url == "https://www.saucedemo.com/inventory.html"
