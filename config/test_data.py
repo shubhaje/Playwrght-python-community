@@ -18,7 +18,7 @@ USER_CREDENTIALS = {
             "password": "secret_sauce"
         },
         "error_user": {
-            "username": "error_user1",
+            "username": "error_user",
             "password": "secret_sauce"
         },
         "visual_user": {
