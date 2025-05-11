@@ -12,6 +12,9 @@ def setup_login(page):
     credentials = login_page.get_user_credentials("standard_user")
     login_page.navigate()
     login_page.login(credentials["username"], credentials["password"])
+    # Wait for inventory page to load completely
+    page.wait_for_load_state('networkidle')
+    page.wait_for_selector('.inventory_list')
     return page
 
 @pytest.mark.smoke
@@ -31,9 +34,15 @@ def test_remove_item_from_cart(setup_login):
 @pytest.mark.regression
 def test_sort_products(setup_login):
     inventory_page = InventoryPage(setup_login)
+    # Get initial product names for comparison
+    initial_names = inventory_page.get_product_names()
     inventory_page.sort_products("za")
-    product_names = inventory_page.get_product_names()
-    assert product_names == sorted(product_names, reverse=True)
+    # Get sorted product names
+    sorted_names = inventory_page.get_product_names()
+    # Verify sort worked
+    assert sorted_names == sorted(initial_names, reverse=True)
+    # Verify at least one product is present
+    assert len(sorted_names) > 0
 
 @pytest.mark.smoke
 def test_cart_workflow(setup_login):
