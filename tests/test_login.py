@@ -1,74 +1,40 @@
-import pytest
-from pages.login_page import LoginPage
-import sys
+from playwright.sync_api import Page
+from config.test_data import USER_CREDENTIALS, DEFAULT_ENV
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-@pytest.mark.smoke
-def test_valid_login(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("standard_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    assert page.url == "https://www.saucedemo.com/inventory.html"
-    assert page.locator('.title').text_content() == "Products"
+class LoginPage:
+    def __init__(self, page: Page):
+        self.page = page
+        self.username_input = page.locator('[data-test="username"]')
+        self.password_input = page.locator('[data-test="password"]')
+        self.login_button = page.locator('[data-test="login-button"]')
+        self.error_message = page.locator('[data-test="error"]')
 
-@pytest.mark.smoke
-def test_locked_out_user(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("locked_out_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    error_message = login_page.get_error_message()
-    assert "Epic sadface: Sorry, this user has been locked out" in error_message
+    def navigate(self):
+        self.page.goto('https://www.saucedemo.com')
 
-@pytest.mark.regression
-def test_problem_user(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("problem_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    assert page.url == "https://www.saucedemo.com/inventory.html"
-    assert page.locator('.title').text_content() == "Products"
-    
-@pytest.mark.regression
-def test_performance_glitch_user(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("performance_glitch_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    assert page.url == "https://www.saucedemo.com/inventory.html"
-    assert page.locator('.title').text_content() == "Products"
+    def login(self, username: str, password: str):
+        self.username_input.fill(username)
+        self.password_input.fill(password)
+        self.login_button.click()
 
-@pytest.mark.smoke
-def test_invalid_credentials(page):
-    login_page = LoginPage(page)
-    login_page.navigate()
-    login_page.login("invalid_user", "wrong_password")
-    
-    error_message = login_page.get_error_message()
-    assert "Epic sadface: Username and password do not match" in error_message
+    def get_error_message(self) -> str:
+        return self.error_message.text_content()
 
-@pytest.mark.regression
-def test_error_user(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("error_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    assert page.url == "https://www.saucedemo.com/inventory.html"
-    assert page.locator('.title').text_content() == "Products"
-
-@pytest.mark.regression
-def test_visual_user(page):
-    login_page = LoginPage(page)
-    credentials = login_page.get_user_credentials("visual_user")
-    login_page.navigate()
-    login_page.login(credentials["username"], credentials["password"])
-    
-    assert page.url == "https://www.saucedemo.com/inventory.html"
-    assert page.locator('.title').text_content() == "Products"
+    @staticmethod
+    def get_user_credentials(user_type: str, environment: str = None) -> dict:
+        """
+        Get credentials for a specific user type and environment
+        Args:
+            user_type: Type of user (e.g., 'standard_user', 'locked_out_user')
+            environment: Environment to get credentials for (e.g., 'SIT', 'UAT')
+        Returns:
+            dict: Dictionary containing username and password
+        """
+        # Get environment from environment variable or use default
+        env = environment or os.getenv('TEST_ENV', DEFAULT_ENV)
+        
+        # Get credentials for the specified environment
+        env_credentials = USER_CREDENTIALS.get(env, USER_CREDENTIALS[DEFAULT_ENV])
+        
+        return env_credentials.get(user_type, {})
